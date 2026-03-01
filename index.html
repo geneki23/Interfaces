@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sede Electrónica · Agencia Tributaria — Rediseño UX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
+
+<style>
+/* ═══════════════════════════════════════════════
+   DESIGN TOKENS
+═══════════════════════════════════════════════ */
+:root {
+  --c-navy:       #0B2545;
+  --c-blue:       #1B6CA8;
+  --c-blue-mid:   #2E86C1;
+  --c-blue-light: #EBF4FB;
+  --c-blue-tint:  #F0F7FF;
+  --c-gold:       #C8973A;
+  --c-gold-light: #FDF6E3;
+  --c-red:        #C0392B;
+  --c-red-light:  #FDEDEC;
+  --c-green:      #1E8449;
+  --c-green-light:#EAFAF1;
+  --c-text:       #1C2B3A;
+  --c-text-2:     #4A5568;
+  --c-text-3:     #718096;
+  --c-border:     #DDE5ED;
+  --c-bg:         #F8FAFB;
+  --c-white:      #FFFFFF;
+
+  --shadow-sm: 0 1px 3px rgba(11,37,69,.07), 0 1px 2px rgba(11,37,69,.04);
+  --shadow-md: 0 4px 12px rgba(11,37,69,.10), 0 2px 4px rgba(11,37,69,.05);
+  --shadow-lg: 0 12px 32px rgba(11,37,69,.13), 0 4px 8px rgba(11,37,69,.06);
+
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+
+  --font-display: 'DM Serif Display', Georgia, serif;
+  --font-body:    'DM Sans', system-ui, sans-serif;
+
+  --transition: 220ms cubic-bezier(.25,.46,.45,.94);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--c-text);
+  background: var(--c-bg);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* ═══════════════════════════════════════════════
+   LAYOUT HELPERS
+═══════════════════════════════════════════════ */
+.container { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+.sr-only { position:absolute; width:1px; height:1px; padding:0; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+
+/* ═══════════════════════════════════════════════
+   HEADER  (F1 — Consistencia visual unificada)
+═══════════════════════════════════════════════ */
+.site-header {
+  background: var(--c-navy);
+  position: sticky; top: 0; z-index: 100;
+  border-bottom: 3px solid var(--c-gold);
+  box-shadow: var(--shadow-md);
+}
+.header-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  height: 64px; gap: 16px;
+}
+.logo {
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none; flex-shrink: 0;
+}
+.logo-shield {
+  width: 36px; height: 36px;
+  background: var(--c-gold);
+  border-radius: 4px 4px 12px 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 700; color: var(--c-navy);
+  font-family: var(--font-display);
+  letter-spacing: -.5px;
+}
+.logo-text { line-height: 1.2; }
+.logo-text span:first-child {
+  display: block; font-size: 11px; font-weight: 500;
+  color: rgba(255,255,255,.55); letter-spacing: .06em; text-transform: uppercase;
+}
+.logo-text span:last-child {
+  display: block; font-size: 14px; font-weight: 600; color: var(--c-white);
+}
+
+/* NAV */
+.site-nav { display: flex; align-items: center; gap: 4px; }
+.nav-link {
+  padding: 6px 12px; border-radius: var(--radius-sm);
+  text-decoration: none; font-size: 13px; font-weight: 500;
+  color: rgba(255,255,255,.7); transition: var(--transition);
+  white-space: nowrap;
+}
+.nav-link:hover { color: var(--c-white); background: rgba(255,255,255,.08); }
+.nav-link.active { color: var(--c-white); }
+
+/* USER CHIP */
+.user-chip {
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 12px; border-radius: 999px;
+  background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.18);
+  color: var(--c-white); font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: var(--transition);
+  flex-shrink: 0;
+}
+.user-chip:hover { background: rgba(255,255,255,.18); }
+.user-avatar {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--c-gold); color: var(--c-navy);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700;
+}
+
+/* HAMBURGER */
+.hamburger { display: none; background: none; border: none; cursor: pointer; padding: 6px; }
+.hamburger span { display: block; width: 22px; height: 2px; background: var(--c-white); margin: 4px 0; border-radius: 2px; transition: var(--transition); }
+
+/* ═══════════════════════════════════════════════
+   SESSION TIMER  (F4 — Visibilidad del estado)
+═══════════════════════════════════════════════ */
+.session-bar {
+  background: var(--c-gold-light);
+  border-bottom: 1px solid rgba(200,151,58,.25);
+  padding: 8px 0;
+  font-size: 13px;
+}
+.session-bar .container {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+.session-info { display: flex; align-items: center; gap: 8px; color: #7D4E0F; }
+.session-timer { font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: .03em; }
+.session-timer.warning { color: var(--c-red); animation: pulse-warn 1s ease-in-out infinite; }
+@keyframes pulse-warn { 0%,100%{ opacity:1 } 50%{ opacity:.5 } }
+.session-extend {
+  padding: 4px 12px; border-radius: 999px;
+  background: var(--c-gold); color: var(--c-navy);
+  border: none; font-family: var(--font-body); font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: var(--transition);
+}
+.session-extend:hover { background: #b5862e; }
+
+/* ═══════════════════════════════════════════════
+   BREADCRUMB
+═══════════════════════════════════════════════ */
+.breadcrumb-bar { padding: 14px 0; border-bottom: 1px solid var(--c-border); background: var(--c-white); }
+.breadcrumb { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 13px; }
+.breadcrumb a { color: var(--c-blue); text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; }
+.breadcrumb-sep { color: var(--c-text-3); }
+.breadcrumb-current { color: var(--c-text-2); }
+
+/* ═══════════════════════════════════════════════
+   PAGE HEADER
+═══════════════════════════════════════════════ */
+.page-hero {
+  background: linear-gradient(135deg, var(--c-navy) 0%, #1a3a5c 60%, #163354 100%);
+  padding: 40px 0 36px; color: var(--c-white);
+  position: relative; overflow: hidden;
+}
+.page-hero::before {
+  content: '';
+  position: absolute; top: -60px; right: -40px;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(200,151,58,.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px; border-radius: 999px;
+  background: rgba(200,151,58,.18); border: 1px solid rgba(200,151,58,.30);
+  font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+  color: #F0C060; margin-bottom: 12px;
+}
+.page-hero h1 {
+  font-family: var(--font-display); font-size: 30px;
+  line-height: 1.2; margin-bottom: 8px; font-weight: 400;
+}
+.page-hero p { font-size: 14px; color: rgba(255,255,255,.65); max-width: 520px; }
+
+/* ═══════════════════════════════════════════════
+   PROGRESS STEPPER  (F4 — Visibilidad del estado)
+═══════════════════════════════════════════════ */
+.stepper-wrap {
+  background: var(--c-white); border-bottom: 1px solid var(--c-border);
+  padding: 0; overflow-x: auto;
+}
+.stepper {
+  display: flex; align-items: stretch;
+  min-width: 560px;
+}
+.step {
+  flex: 1; display: flex; align-items: center; gap: 10px;
+  padding: 16px 20px; position: relative;
+  border-right: 1px solid var(--c-border);
+  transition: var(--transition);
+}
+.step:last-child { border-right: none; }
+.step-num {
+  width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; border: 2px solid var(--c-border);
+  background: var(--c-white); color: var(--c-text-3);
+  transition: var(--transition);
+}
+.step-label { line-height: 1.3; }
+.step-label span:first-child { display: block; font-size: 11px; color: var(--c-text-3); }
+.step-label strong { font-size: 13px; font-weight: 600; color: var(--c-text-2); }
+
+/* states */
+.step.done .step-num { background: var(--c-green); border-color: var(--c-green); color: var(--c-white); }
+.step.done .step-label strong { color: var(--c-green); }
+.step.active { background: var(--c-blue-tint); }
+.step.active .step-num { background: var(--c-blue); border-color: var(--c-blue); color: var(--c-white); }
+.step.active .step-label strong { color: var(--c-navy); }
+.step.active::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+  background: var(--c-blue);
+}
+
+/* ═══════════════════════════════════════════════
+   MAIN LAYOUT
+═══════════════════════════════════════════════ */
+.main-layout {
+  display: grid; grid-template-columns: 1fr 320px; gap: 28px;
+  padding: 32px 0 60px;
+}
+@media (max-width: 900px) { .main-layout { grid-template-columns: 1fr; } }
+
+/* ═══════════════════════════════════════════════
+   FORM CARD
+═══════════════════════════════════════════════ */
+.form-card {
+  background: var(--c-white); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md); overflow: hidden;
+}
+.form-card-header {
+  padding: 20px 24px; border-bottom: 1px solid var(--c-border);
+  display: flex; align-items: center; gap: 12px;
+}
+.form-card-icon {
+  width: 40px; height: 40px; border-radius: var(--radius-sm);
+  background: var(--c-blue-light); display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.form-card-header h2 { font-size: 17px; font-weight: 600; margin-bottom: 2px; }
+.form-card-header p { font-size: 13px; color: var(--c-text-2); }
+.form-body { padding: 24px; }
+
+/* FIELD  (F3 — Lenguaje y contexto) */
+.field-group { margin-bottom: 20px; }
+.field-label {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 600; color: var(--c-text);
+  margin-bottom: 6px;
+}
+.field-required { color: var(--c-red); font-size: 14px; }
+.tooltip-btn {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--c-blue-light); border: none; cursor: pointer;
+  color: var(--c-blue); font-size: 11px; font-weight: 700;
+  display: inline-flex; align-items: center; justify-content: center;
+  position: relative; transition: var(--transition);
+}
+.tooltip-btn:hover { background: var(--c-blue); color: var(--c-white); }
+.tooltip-bubble {
+  position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
+  background: var(--c-navy); color: var(--c-white); font-size: 12px; font-weight: 400;
+  padding: 8px 12px; border-radius: var(--radius-sm); width: 220px; line-height: 1.5;
+  opacity: 0; pointer-events: none; transition: var(--transition);
+  z-index: 10; text-align: left;
+}
+.tooltip-bubble::after {
+  content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+  border: 5px solid transparent; border-top-color: var(--c-navy);
+}
+.tooltip-btn:hover .tooltip-bubble { opacity: 1; }
+
+.field-hint { font-size: 12px; color: var(--c-text-3); margin-bottom: 6px; }
+.field-input {
+  width: 100%; padding: 10px 14px; border: 1.5px solid var(--c-border);
+  border-radius: var(--radius-sm); font-family: var(--font-body); font-size: 14px;
+  color: var(--c-text); background: var(--c-white); transition: var(--transition);
+  -webkit-appearance: none;
+}
+.field-input:focus {
+  outline: none; border-color: var(--c-blue);
+  box-shadow: 0 0 0 3px rgba(27,108,168,.14);
+}
+.field-input:valid:not(:placeholder-shown) { border-color: var(--c-green); }
+.field-input.error { border-color: var(--c-red); background: var(--c-red-light); }
+.field-input::placeholder { color: var(--c-text-3); }
+select.field-input { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234A5568' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
+
+/* ERROR MESSAGE  (F2 — Mensajes de error comprensibles) */
+.field-error {
+  display: none; align-items: flex-start; gap: 6px;
+  margin-top: 6px; padding: 8px 10px;
+  background: var(--c-red-light); border-radius: var(--radius-sm);
+  border-left: 3px solid var(--c-red);
+}
+.field-error.visible { display: flex; }
+.field-error-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+.field-error-text { font-size: 12.5px; color: #922b21; line-height: 1.5; }
+.field-error-text strong { display: block; margin-bottom: 2px; font-size: 13px; }
+
+/* SUCCESS */
+.field-success {
+  display: none; align-items: center; gap: 6px;
+  margin-top: 6px; font-size: 12.5px; color: var(--c-green);
+}
+.field-success.visible { display: flex; }
+
+/* AMOUNT FIELD */
+.amount-wrap { position: relative; }
+.amount-prefix {
+  position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+  font-size: 14px; font-weight: 600; color: var(--c-text-2); pointer-events: none;
+}
+.amount-wrap .field-input { padding-left: 30px; }
+
+/* INLINE HELP BOX */
+.help-inline {
+  display: flex; gap: 10px; padding: 12px 14px;
+  background: var(--c-blue-tint); border-radius: var(--radius-sm);
+  border: 1px solid rgba(27,108,168,.15); margin-top: 6px;
+}
+.help-inline-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+.help-inline-text { font-size: 12.5px; color: #1a3a5c; line-height: 1.6; }
+.help-inline-text a { color: var(--c-blue); font-weight: 600; text-decoration: none; }
+.help-inline-text a:hover { text-decoration: underline; }
+
+/* DIVIDER */
+.form-divider { height: 1px; background: var(--c-border); margin: 24px 0; }
+.form-section-title {
+  font-size: 13px; font-weight: 700; color: var(--c-text-3);
+  letter-spacing: .07em; text-transform: uppercase; margin-bottom: 16px;
+}
+
+/* GRID */
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 600px) { .field-row { grid-template-columns: 1fr; } }
+
+/* ACTIONS  (F4 — Estado claro del proceso) */
+.form-actions {
+  padding: 20px 24px; background: var(--c-bg);
+  border-top: 1px solid var(--c-border);
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  flex-wrap: wrap;
+}
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 11px 22px; border-radius: var(--radius-sm);
+  font-family: var(--font-body); font-size: 14px; font-weight: 600;
+  cursor: pointer; border: none; transition: var(--transition); text-decoration: none;
+  white-space: nowrap; position: relative; overflow: hidden;
+}
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn-primary {
+  background: var(--c-blue); color: var(--c-white);
+  box-shadow: 0 2px 8px rgba(27,108,168,.35);
+}
+.btn-primary:hover:not(:disabled) { background: #155d94; box-shadow: 0 4px 14px rgba(27,108,168,.45); transform: translateY(-1px); }
+.btn-primary:active { transform: translateY(0); }
+.btn-secondary {
+  background: var(--c-white); color: var(--c-text);
+  border: 1.5px solid var(--c-border);
+}
+.btn-secondary:hover { background: var(--c-bg); border-color: #b0bec5; }
+.btn-ghost { background: none; color: var(--c-blue); padding: 11px 8px; }
+.btn-ghost:hover { text-decoration: underline; }
+
+/* LOADING STATE */
+.btn-spinner {
+  width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.4);
+  border-top-color: var(--c-white); border-radius: 50%;
+  display: none; animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.btn.loading .btn-spinner { display: block; }
+.btn.loading .btn-text { opacity: .7; }
+
+/* ═══════════════════════════════════════════════
+   PROGRESS OVERLAY  (F4 — Feedback de envío)
+═══════════════════════════════════════════════ */
+.progress-overlay {
+  display: none; position: fixed; inset: 0; z-index: 200;
+  background: rgba(11,37,69,.55); backdrop-filter: blur(4px);
+  align-items: center; justify-content: center;
+}
+.progress-overlay.show { display: flex; }
+.progress-modal {
+  background: var(--c-white); border-radius: var(--radius-lg);
+  padding: 40px 48px; text-align: center; max-width: 380px; width: 90%;
+  box-shadow: var(--shadow-lg);
+  animation: modal-in .3s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes modal-in { from{ opacity:0; transform:scale(.9) translateY(12px) } }
+.progress-ring-wrap { position: relative; width: 80px; height: 80px; margin: 0 auto 20px; }
+.progress-ring { transform: rotate(-90deg); }
+.progress-ring-bg { fill: none; stroke: var(--c-border); stroke-width: 4; }
+.progress-ring-fill {
+  fill: none; stroke: var(--c-blue); stroke-width: 4;
+  stroke-linecap: round; stroke-dasharray: 220; stroke-dashoffset: 220;
+  transition: stroke-dashoffset .6s ease;
+}
+.progress-ring-fill.complete { stroke: var(--c-green); }
+.progress-icon {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  font-size: 28px;
+}
+.progress-modal h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.progress-modal p { font-size: 14px; color: var(--c-text-2); line-height: 1.6; }
+.progress-steps { text-align: left; margin-top: 20px; }
+.progress-step {
+  display: flex; align-items: center; gap: 10px;
+  padding: 7px 0; font-size: 13px; color: var(--c-text-3);
+  border-bottom: 1px solid var(--c-border);
+  transition: var(--transition);
+}
+.progress-step:last-child { border-bottom: none; }
+.progress-step.done { color: var(--c-green); }
+.progress-step.active { color: var(--c-blue); font-weight: 600; }
+.progress-step-dot {
+  width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+  background: var(--c-border); display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+  transition: var(--transition);
+}
+.progress-step.done .progress-step-dot { background: var(--c-green); color: var(--c-white); }
+.progress-step.active .progress-step-dot { background: var(--c-blue); animation: pulse-step .9s ease-in-out infinite; }
+@keyframes pulse-step { 0%,100%{ box-shadow: 0 0 0 0 rgba(27,108,168,.4) } 50%{ box-shadow: 0 0 0 6px rgba(27,108,168,0) } }
+
+/* ═══════════════════════════════════════════════
+   SUCCESS STATE
+═══════════════════════════════════════════════ */
+.success-screen {
+  display: none;
+  background: var(--c-white); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md); padding: 56px 40px; text-align: center;
+}
+.success-screen.show { display: block; }
+.success-check {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: var(--c-green-light); border: 3px solid var(--c-green);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; margin: 0 auto 20px;
+  animation: pop-in .5s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes pop-in { from{ opacity:0; transform:scale(.5) } }
+.success-screen h2 { font-family: var(--font-display); font-size: 26px; margin-bottom: 10px; }
+.success-screen p { color: var(--c-text-2); font-size: 15px; max-width: 400px; margin: 0 auto 24px; line-height: 1.7; }
+.receipt-box {
+  background: var(--c-bg); border: 1px solid var(--c-border); border-radius: var(--radius-sm);
+  padding: 16px 20px; margin: 0 auto 28px; max-width: 360px; text-align: left;
+}
+.receipt-row { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; }
+.receipt-row span:first-child { color: var(--c-text-3); }
+.receipt-row span:last-child { font-weight: 600; color: var(--c-text); }
+
+/* ═══════════════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════════════ */
+.sidebar { display: flex; flex-direction: column; gap: 16px; }
+.sidebar-card {
+  background: var(--c-white); border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm); overflow: hidden;
+}
+.sidebar-card-header {
+  padding: 14px 16px; border-bottom: 1px solid var(--c-border);
+  font-size: 13px; font-weight: 700; color: var(--c-navy);
+  display: flex; align-items: center; gap: 8px;
+}
+.sidebar-card-body { padding: 16px; font-size: 13px; line-height: 1.7; color: var(--c-text-2); }
+.sidebar-link { display: flex; align-items: center; gap: 8px; padding: 8px 0; text-decoration: none; color: var(--c-blue); font-size: 13px; border-bottom: 1px solid var(--c-border); }
+.sidebar-link:last-child { border-bottom: none; padding-bottom: 0; }
+.sidebar-link:hover { color: var(--c-navy); }
+.sidebar-link-icon { font-size: 15px; }
+
+/* STATUS BADGE */
+.status-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600;
+}
+.status-pill.green { background: var(--c-green-light); color: var(--c-green); }
+.status-pill.blue  { background: var(--c-blue-light);  color: var(--c-blue); }
+
+/* ═══════════════════════════════════════════════
+   ERROR NOTIFICATION (F2 — mensajes comprensibles)
+═══════════════════════════════════════════════ */
+.error-toast {
+  display: none; position: fixed; bottom: 24px; right: 24px; z-index: 300;
+  background: var(--c-white); border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg); border-left: 4px solid var(--c-red);
+  padding: 16px 20px; max-width: 380px; width: 90%;
+  animation: toast-in .3s ease;
+}
+.error-toast.show { display: block; }
+@keyframes toast-in { from{ opacity:0; transform: translateY(12px) } }
+.toast-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+.toast-title { font-size: 14px; font-weight: 700; color: var(--c-red); display: flex; align-items: center; gap: 6px; }
+.toast-close { background: none; border: none; cursor: pointer; color: var(--c-text-3); font-size: 18px; line-height: 1; padding: 0; }
+.toast-body { font-size: 13px; color: var(--c-text-2); line-height: 1.6; margin-bottom: 10px; }
+.toast-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.toast-btn {
+  padding: 5px 12px; border-radius: var(--radius-sm); font-size: 12.5px; font-weight: 600;
+  cursor: pointer; border: none; font-family: var(--font-body); transition: var(--transition);
+}
+.toast-btn-primary { background: var(--c-red); color: var(--c-white); }
+.toast-btn-primary:hover { background: #a93226; }
+.toast-btn-secondary { background: var(--c-bg); color: var(--c-text); border: 1px solid var(--c-border); }
+.toast-btn-secondary:hover { background: var(--c-border); }
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .site-nav { display: none; }
+  .hamburger { display: block; }
+  .page-hero h1 { font-size: 22px; }
+  .main-layout { padding: 20px 0 40px; }
+  .form-body, .form-actions { padding: 16px; }
+  .form-card-header { padding: 16px; }
+}
+
+/* ═══════════════════════════════════════════════
+   ANNOTATION OVERLAY (only in demo)
+═══════════════════════════════════════════════ */
+.demo-bar {
+  background: #1a1a2e; color: #e2e8f0;
+  padding: 10px 0; font-size: 12.5px;
+}
+.demo-bar .container { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.demo-bar strong { color: #f6c90e; }
+.demo-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.demo-tag {
+  padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600;
+  border: 1px solid;
+}
+.demo-tag.fix1 { border-color: #6ee7b7; color: #6ee7b7; }
+.demo-tag.fix2 { border-color: #fca5a5; color: #fca5a5; }
+.demo-tag.fix3 { border-color: #93c5fd; color: #93c5fd; }
+.demo-tag.fix4 { border-color: #fcd34d; color: #fcd34d; }
+
+/* Annotation badges in context */
+.fx {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 18px; height: 18px; border-radius: 50%; font-size: 9px; font-weight: 800;
+  vertical-align: middle; margin-left: 4px; flex-shrink: 0;
+}
+.fx1 { background: #6ee7b7; color: #064e3b; }
+.fx2 { background: #fca5a5; color: #7f1d1d; }
+.fx3 { background: #93c5fd; color: #1e3a5f; }
+.fx4 { background: #fcd34d; color: #78350f; }
+</style>
+</head>
+<body>
+
+<!-- DEMO BAR -->
+<div class="demo-bar" role="note" aria-label="Barra de contexto del rediseño">
+  <div class="container">
+    <div><strong>Rediseño UX</strong> · Sede Electrónica AEAT — Fallos corregidos:</div>
+    <div class="demo-tags">
+      <span class="demo-tag fix1">F1 · Consistencia</span>
+      <span class="demo-tag fix2">F2 · Errores claros</span>
+      <span class="demo-tag fix3">F3 · Lenguaje natural</span>
+      <span class="demo-tag fix4">F4 · Visibilidad de estado</span>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER  ✦ F1 — misma identidad visual en toda la sede -->
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a href="#" class="logo" aria-label="Agencia Tributaria — Inicio">
+      <div class="logo-shield" aria-hidden="true">AT</div>
+      <div class="logo-text">
+        <span>Gobierno de España</span>
+        <span>Agencia Tributaria</span>
+      </div>
+    </a>
+
+    <nav class="site-nav" aria-label="Navegación principal">
+      <a href="#" class="nav-link active" aria-current="page">Mis trámites</a>
+      <a href="#" class="nav-link">Declaraciones</a>
+      <a href="#" class="nav-link">Cita previa</a>
+      <a href="#" class="nav-link">Ayuda</a>
+    </nav>
+
+    <button class="hamburger" aria-label="Menú" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+
+    <div class="user-chip" role="button" tabindex="0" aria-label="María García — opciones de usuario" aria-haspopup="true">
+      <div class="user-avatar" aria-hidden="true">MG</div>
+      <span>María García</span>
+    </div>
+  </div>
+</header>
+
+<!-- SESSION TIMER  ✦ F4 — el usuario siempre sabe cuánto tiempo le queda -->
+<div class="session-bar" role="status" aria-live="polite" aria-label="Estado de sesión">
+  <div class="container">
+    <div class="session-info">
+      <span aria-hidden="true">🔒</span>
+      <span>Sesión activa · Tiempo restante: <strong class="session-timer" id="sessionTimer">14:32</strong></span>
+    </div>
+    <button class="session-extend" onclick="extendSession()" aria-label="Ampliar sesión 20 minutos más">
+      + 20 min
+    </button>
+  </div>
+</div>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb-bar">
+  <div class="container">
+    <nav class="breadcrumb" aria-label="Ruta de navegación">
+      <a href="#">Inicio</a>
+      <span class="breadcrumb-sep" aria-hidden="true">›</span>
+      <a href="#">Declaraciones</a>
+      <span class="breadcrumb-sep" aria-hidden="true">›</span>
+      <a href="#">IRPF</a>
+      <span class="breadcrumb-sep" aria-hidden="true">›</span>
+      <span class="breadcrumb-current" aria-current="page">Presentación de la declaración</span>
+    </nav>
+  </div>
+</div>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <div class="container">
+    <div class="hero-tag" aria-hidden="true">📄 Impuesto sobre la Renta</div>
+    <h1>Declaración de la Renta 2024 <span class="fx fx1" title="F1 Corregido: consistencia visual">1</span></h1>
+    <p>Presenta o modifica tu borrador. Todos los datos de las secciones anteriores se han guardado automáticamente.</p>
+  </div>
+</div>
+
+<!-- PROGRESS STEPPER  ✦ F4 — el usuario sabe exactamente en qué paso está -->
+<div class="stepper-wrap" role="navigation" aria-label="Progreso del trámite">
+  <div class="container">
+    <ol class="stepper" aria-label="Pasos del trámite">
+      <li class="step done" aria-label="Paso 1: Identificación — completado">
+        <div class="step-num" aria-hidden="true">✓</div>
+        <div class="step-label"><span>Paso 1</span><strong>Identificación</strong></div>
+      </li>
+      <li class="step done" aria-label="Paso 2: Datos personales — completado">
+        <div class="step-num" aria-hidden="true">✓</div>
+        <div class="step-label"><span>Paso 2</span><strong>Datos personales</strong></div>
+      </li>
+      <li class="step active" aria-current="step" aria-label="Paso 3: Rendimientos del trabajo — en curso">
+        <div class="step-num" aria-hidden="true">3</div>
+        <div class="step-label"><span>Paso 3 de 5</span><strong>Rendimientos</strong></div>
+      </li>
+      <li class="step" aria-label="Paso 4: Deducciones — pendiente">
+        <div class="step-num" aria-hidden="true">4</div>
+        <div class="step-label"><span>Paso 4</span><strong>Deducciones</strong></div>
+      </li>
+      <li class="step" aria-label="Paso 5: Revisión y firma — pendiente">
+        <div class="step-num" aria-hidden="true">5</div>
+        <div class="step-label"><span>Paso 5</span><strong>Firma y envío</strong></div>
+      </li>
+    </ol>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main id="main" class="container">
+  <div class="main-layout">
+
+    <!-- FORM -->
+    <div>
+      <!-- MAIN FORM CARD -->
+      <div class="form-card" id="formCard">
+        <div class="form-card-header">
+          <div class="form-card-icon" aria-hidden="true">💼</div>
+          <div>
+            <h2>Rendimientos del trabajo</h2>
+            <p>Ingresos obtenidos por tu relación laboral durante 2024 <span class="fx fx3" title="F3 Corregido: lenguaje natural">3</span></p>
+          </div>
+        </div>
+
+        <form class="form-body" id="mainForm" novalidate autocomplete="on">
+
+          <!-- EMPRESA -->
+          <div class="form-section-title">Empresa pagadora</div>
+
+          <div class="field-group">
+            <label class="field-label" for="nifEmpresa">
+              NIF de la empresa <span class="field-required" aria-hidden="true">*</span>
+              <button type="button" class="tooltip-btn" aria-label="Ayuda: ¿qué es el NIF de la empresa?" tabindex="0">
+                ?
+                <span class="tooltip-bubble" role="tooltip">
+                  El Número de Identificación Fiscal (NIF) de tu empresa. Lo encontrarás en tu nómina o en el contrato de trabajo. Tiene el formato B12345678.
+                </span>
+              </button>
+            </label>
+            <p class="field-hint" id="nifEmpresaHint">Ejemplo: B86123456 · Lo encontrarás en tus nóminas <span class="fx fx3" title="F3: ejemplo en contexto">3</span></p>
+            <input
+              type="text" id="nifEmpresa" name="nifEmpresa"
+              class="field-input" placeholder="B12345678"
+              aria-describedby="nifEmpresaHint nifEmpresaError"
+              autocomplete="organization"
+              pattern="[A-Z][0-9]{8}"
+              maxlength="9"
+              required
+            />
+            <div class="field-error" id="nifEmpresaError" role="alert" aria-live="polite">
+              <span class="field-error-icon" aria-hidden="true">⚠️</span>
+              <div class="field-error-text">
+                <strong>Formato incorrecto</strong>
+                El NIF debe empezar por una letra mayúscula seguida de 8 números (ej: B86123456). Compruébalo en tu nómina. <span class="fx fx2" title="F2: error claro y accionable">2</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="nombreEmpresa">Nombre de la empresa</label>
+            <input type="text" id="nombreEmpresa" name="nombreEmpresa" class="field-input" placeholder="Acme Solutions S.L." autocomplete="organization" />
+          </div>
+
+          <div class="form-divider"></div>
+          <div class="form-section-title">Ingresos del trabajo</div>
+
+          <!-- CAMPO CON AYUDA INLINE  ✦ F3 — terminología clara -->
+          <div class="field-group">
+            <label class="field-label" for="rendimientosIntegros">
+              Ingresos brutos totales del año <span class="field-required" aria-hidden="true">*</span>
+              <button type="button" class="tooltip-btn" aria-label="Ayuda: qué son los ingresos brutos" tabindex="0">
+                ?
+                <span class="tooltip-bubble" role="tooltip">
+                  Es el dinero total que tu empresa te pagó antes de descontarte impuestos ni seguridad social. Míralo en la casilla «Total devengado» de tu última nómina del año.
+                </span>
+              </button>
+            </label>
+            <p class="field-hint">Lo que aparece en tu certificado de retenciones como «Retribuciones dinerarias»</p>
+            <div class="amount-wrap">
+              <span class="amount-prefix" aria-hidden="true">€</span>
+              <input
+                type="number" id="rendimientosIntegros" name="rendimientosIntegros"
+                class="field-input" placeholder="28.500,00"
+                aria-describedby="rendIntegrosHelp rendIntegrosError"
+                min="0" step="0.01" required
+              />
+            </div>
+            <div class="help-inline" id="rendIntegrosHelp">
+              <span class="help-inline-icon" aria-hidden="true">ℹ️</span>
+              <div class="help-inline-text">
+                <strong>¿Dónde lo encuentro?</strong> Tu empresa debe haberte enviado el <strong>certificado de retenciones de 2024</strong> antes del 31 de enero. Si no lo has recibido, puedes solicitarlo en <a href="#">mis datos fiscales</a>. <span class="fx fx3" title="F3: orientación contextual">3</span>
+              </div>
+            </div>
+            <div class="field-error" id="rendIntegrosError" role="alert" aria-live="polite">
+              <span class="field-error-icon" aria-hidden="true">⚠️</span>
+              <div class="field-error-text">
+                <strong>Campo obligatorio</strong>
+                Introduce el importe en euros sin puntos de miles. Ejemplo: 28500.50
+              </div>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label" for="retencionesIRPF">
+                IRPF retenido (ya descontado)
+                <button type="button" class="tooltip-btn" aria-label="Ayuda: qué es el IRPF retenido" tabindex="0">
+                  ?
+                  <span class="tooltip-bubble" role="tooltip">
+                    El dinero que tu empresa retuvo de tu salario y entregó directamente a Hacienda en tu nombre. Aparece en tu nómina como «IRPF» o «Retención».
+                  </span>
+                </button>
+              </label>
+              <div class="amount-wrap">
+                <span class="amount-prefix" aria-hidden="true">€</span>
+                <input type="number" id="retencionesIRPF" name="retencionesIRPF" class="field-input" placeholder="4.200,00" min="0" step="0.01" />
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="seguridadSocial">
+                Seguridad Social cotizada
+                <button type="button" class="tooltip-btn" aria-label="Ayuda: seguridad social" tabindex="0">
+                  ?
+                  <span class="tooltip-bubble" role="tooltip">
+                    La aportación a la Seguridad Social que aparece en tu nómina como descuento. Reduce tu base imponible.
+                  </span>
+                </button>
+              </label>
+              <div class="amount-wrap">
+                <span class="amount-prefix" aria-hidden="true">€</span>
+                <input type="number" id="seguridadSocial" name="seguridadSocial" class="field-input" placeholder="1.680,00" min="0" step="0.01" />
+              </div>
+            </div>
+          </div>
+
+          <!-- RESULTADO EN TIEMPO REAL -->
+          <div class="form-divider"></div>
+          <div class="sidebar-card" style="box-shadow:none; border:1px solid var(--c-border);">
+            <div class="sidebar-card-header">
+              📊 Resumen calculado en tiempo real <span class="fx fx4" title="F4: visibilidad del resultado">4</span>
+            </div>
+            <div class="sidebar-card-body">
+              <div class="receipt-row" style="font-size:14px; padding:6px 0;">
+                <span>Ingresos brutos</span>
+                <span id="sumaBruta" style="font-weight:700; color:var(--c-text);">— €</span>
+              </div>
+              <div class="receipt-row" style="font-size:14px; padding:6px 0;">
+                <span>− SS cotizada</span>
+                <span id="sumaSSocial" style="color:var(--c-red);">— €</span>
+              </div>
+              <div class="receipt-row" style="font-size:14px; padding:6px 0; border-top:1px solid var(--c-border); margin-top:4px;">
+                <span style="font-weight:700;">Rendimiento neto</span>
+                <span id="sumaRendNeto" style="font-weight:700; color:var(--c-navy);">— €</span>
+              </div>
+            </div>
+          </div>
+
+        </form>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="showError()">
+            ← Paso anterior
+          </button>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <button type="button" class="btn btn-ghost" onclick="saveDraft()">💾 Guardar borrador</button>
+            <button type="button" class="btn btn-primary" id="nextBtn" onclick="submitForm()">
+              <span class="btn-spinner" id="btnSpinner" aria-hidden="true"></span>
+              <span class="btn-text">Guardar y continuar →</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUCCESS (hidden initially) -->
+      <div class="success-screen" id="successScreen" role="status" aria-live="polite">
+        <div class="success-check" aria-hidden="true">✓</div>
+        <h2>¡Paso completado!</h2>
+        <p>Los datos de rendimientos del trabajo se han guardado correctamente. Puedes continuar con el paso 4: Deducciones.</p>
+        <div class="receipt-box" aria-label="Resumen del paso guardado">
+          <div class="receipt-row"><span>NIF empresa</span><span id="recNif">—</span></div>
+          <div class="receipt-row"><span>Ingresos brutos</span><span id="recBrutos">—</span></div>
+          <div class="receipt-row"><span>IRPF retenido</span><span id="recIRPF">—</span></div>
+          <div class="receipt-row"><span>Rendimiento neto</span><span id="recNeto">—</span></div>
+        </div>
+        <div style="display:flex; justify-content:center; gap:12px;">
+          <button class="btn btn-secondary" onclick="resetForm()">← Modificar</button>
+          <button class="btn btn-primary">Continuar a Deducciones →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" aria-label="Información de ayuda">
+
+      <div class="sidebar-card">
+        <div class="sidebar-card-header">📂 Tu declaración</div>
+        <div class="sidebar-card-body">
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:13px;">
+            <span>Estado</span>
+            <span class="status-pill blue">● En proceso</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:13px;">
+            <span>Último guardado</span>
+            <span style="font-weight:600;" id="lastSaved">hace 2 min</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:13px;">
+            <span>Ejercicio</span>
+            <span style="font-weight:600;">2024</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-card-header">📎 Documentos que necesitas</div>
+        <div class="sidebar-card-body" style="padding-bottom:0;">
+          <a href="#" class="sidebar-link"><span class="sidebar-link-icon">📄</span> Certificado de retenciones</a>
+          <a href="#" class="sidebar-link"><span class="sidebar-link-icon">📄</span> Última nómina de 2024</a>
+          <a href="#" class="sidebar-link"><span class="sidebar-link-icon">📱</span> Mis datos fiscales en la app</a>
+        </div>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-card-header">❓ Necesito ayuda</div>
+        <div class="sidebar-card-body" style="padding-bottom:0;">
+          <a href="#" class="sidebar-link"><span class="sidebar-link-icon">💬</span> Chat con un asesor</a>
+          <a href="#" class="sidebar-link"><span class="sidebar-link-icon">📞</span> Llamar al 901 200 345</a>
+          <a href="#" class="sidebar-link"><span class="sidebar-link-icon">🗓️</span> Pedir cita presencial</a>
+          <a href="#" class="sidebar-link"><span class="sidebar-link-icon">🎥</span> Videotutorial paso a paso</a>
+        </div>
+      </div>
+
+      <div class="sidebar-card" style="background:var(--c-blue-tint); border: 1px solid rgba(27,108,168,.15); box-shadow:none;">
+        <div class="sidebar-card-header" style="border-color:rgba(27,108,168,.15); color:var(--c-blue);">💡 Sabías que…</div>
+        <div class="sidebar-card-body" style="font-size:13px; color:var(--c-navy); line-height:1.65;">
+          Si tus ingresos son menores de <strong>22.000 €</strong> de un solo pagador, estás exento de declarar. Aun así, si tienes retenciones, puede <strong>salirte a devolver</strong>.
+        </div>
+      </div>
+
+    </aside>
+  </div>
+</main>
+
+<!-- PROGRESS OVERLAY  ✦ F4 — feedback visual completo del envío -->
+<div class="progress-overlay" id="progressOverlay" role="dialog" aria-modal="true" aria-labelledby="progressTitle" aria-live="polite">
+  <div class="progress-modal">
+    <div class="progress-ring-wrap">
+      <svg class="progress-ring" width="80" height="80" viewBox="0 0 80 80" aria-hidden="true">
+        <circle class="progress-ring-bg" cx="40" cy="40" r="35"/>
+        <circle class="progress-ring-fill" id="progressRing" cx="40" cy="40" r="35"/>
+      </svg>
+      <div class="progress-icon" id="progressIcon" aria-hidden="true">⏳</div>
+    </div>
+    <h3 id="progressTitle">Guardando tus datos</h3>
+    <p id="progressDesc">Por favor, espera. No cierres esta ventana.</p>
+    <div class="progress-steps" aria-label="Pasos del guardado">
+      <div class="progress-step active" id="pStep1">
+        <div class="progress-step-dot" aria-hidden="true">1</div>
+        Validando los datos del formulario
+      </div>
+      <div class="progress-step" id="pStep2">
+        <div class="progress-step-dot" aria-hidden="true">2</div>
+        Enviando a los servidores de la AEAT
+      </div>
+      <div class="progress-step" id="pStep3">
+        <div class="progress-step-dot" aria-hidden="true">3</div>
+        Generando justificante de presentación
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ERROR TOAST  ✦ F2 — errores comprensibles y accionables -->
+<div class="error-toast" id="errorToast" role="alert" aria-live="assertive">
+  <div class="toast-header">
+    <div class="toast-title">⚠️ Hay campos incorrectos</div>
+    <button class="toast-close" onclick="closeToast()" aria-label="Cerrar aviso">×</button>
+  </div>
+  <div class="toast-body" id="toastBody">
+    Revisa los campos marcados en rojo antes de continuar. Si el problema persiste, prueba a recargar la página o contacta con soporte.
+  </div>
+  <div class="toast-actions">
+    <button class="toast-btn toast-btn-primary" onclick="closeToast(); document.getElementById('nifEmpresa').focus();">Ir al primer error</button>
+    <button class="toast-btn toast-btn-secondary" onclick="closeToast()">Cerrar</button>
+  </div>
+</div>
+
+<script>
+// ── SESSION TIMER ────────────────────────────────────────────────────
+let seconds = 14 * 60 + 32;
+const timerEl = document.getElementById('sessionTimer');
+
+function formatTime(s) {
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+
+const sessionInterval = setInterval(() => {
+  seconds--;
+  timerEl.textContent = formatTime(seconds);
+  if (seconds <= 120) timerEl.classList.add('warning');
+  if (seconds <= 0) {
+    clearInterval(sessionInterval);
+    timerEl.textContent = '00:00';
+  }
+}, 1000);
+
+function extendSession() {
+  seconds += 20 * 60;
+  timerEl.classList.remove('warning');
+  const btn = document.querySelector('.session-extend');
+  btn.textContent = '✓ Extendida';
+  btn.style.background = 'var(--c-green)';
+  setTimeout(() => {
+    btn.textContent = '+ 20 min';
+    btn.style.background = '';
+  }, 2000);
+}
+
+// ── REAL-TIME CALCULATION ────────────────────────────────────────────
+function fmt(n) { return isNaN(n) ? '—' : n.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €'; }
+
+['rendimientosIntegros','seguridadSocial'].forEach(id => {
+  document.getElementById(id).addEventListener('input', calcular);
+});
+
+function calcular() {
+  const bruto  = parseFloat(document.getElementById('rendimientosIntegros').value) || null;
+  const ss     = parseFloat(document.getElementById('seguridadSocial').value) || 0;
+  document.getElementById('sumaBruta').textContent    = bruto !== null ? fmt(bruto) : '— €';
+  document.getElementById('sumaSSocial').textContent  = ss > 0 ? '−' + fmt(ss) : '— €';
+  document.getElementById('sumaRendNeto').textContent = bruto !== null ? fmt(bruto - ss) : '— €';
+}
+
+// ── FORM VALIDATION ──────────────────────────────────────────────────
+function validateNif(value) {
+  return /^[A-Z][0-9]{8}$/.test(value.trim().toUpperCase());
+}
+
+document.getElementById('nifEmpresa').addEventListener('blur', function() {
+  const val = this.value.trim().toUpperCase();
+  this.value = val;
+  const errEl = document.getElementById('nifEmpresaError');
+  if (val && !validateNif(val)) {
+    this.classList.add('error');
+    errEl.classList.add('visible');
+  } else {
+    this.classList.remove('error');
+    errEl.classList.remove('visible');
+  }
+});
+
+// ── SUBMIT FLOW  (F4 — progress feedback) ───────────────────────────
+function submitForm() {
+  const nif = document.getElementById('nifEmpresa').value.trim();
+  const bruto = document.getElementById('rendimientosIntegros').value;
+
+  // Validate
+  if (!validateNif(nif) || !bruto) {
+    document.getElementById('nifEmpresaError').classList.toggle('visible', !validateNif(nif));
+    document.getElementById('nifEmpresa').classList.toggle('error', !validateNif(nif));
+    document.getElementById('rendIntegrosError').classList.toggle('visible', !bruto);
+    document.getElementById('rendimientosIntegros').classList.toggle('error', !bruto);
+    showError('Revisa los campos marcados en rojo antes de continuar.');
+    return;
+  }
+
+  // Show overlay
+  const overlay = document.getElementById('progressOverlay');
+  overlay.classList.add('show');
+
+  const ring = document.getElementById('progressRing');
+  const circumference = 2 * Math.PI * 35;
+
+  function setProgress(pct) {
+    ring.style.strokeDashoffset = circumference - (circumference * pct / 100);
+  }
+
+  // Simulate 3-step progress
+  const steps = [
+    { id: 'pStep1', delay: 0,    progress: 33  },
+    { id: 'pStep2', delay: 900,  progress: 66  },
+    { id: 'pStep3', delay: 1800, progress: 100 },
+  ];
+
+  steps.forEach(({ id, delay, progress }) => {
+    setTimeout(() => {
+      // Mark previous as done
+      const prev = document.querySelector('.progress-step.active');
+      if (prev) {
+        prev.classList.remove('active');
+        prev.classList.add('done');
+        prev.querySelector('.progress-step-dot').textContent = '✓';
+      }
+      // Mark current as active (unless last)
+      const el = document.getElementById(id);
+      if (progress < 100) {
+        el.classList.add('active');
+      } else {
+        el.classList.add('done');
+        el.querySelector('.progress-step-dot').textContent = '✓';
+      }
+      setProgress(progress);
+    }, delay);
+  });
+
+  // Complete
+  setTimeout(() => {
+    ring.classList.add('complete');
+    document.getElementById('progressIcon').textContent = '✅';
+    document.getElementById('progressTitle').textContent = '¡Guardado correctamente!';
+    document.getElementById('progressDesc').textContent = 'Tus datos se han registrado en la AEAT.';
+
+    setTimeout(() => {
+      overlay.classList.remove('show');
+      showSuccess();
+    }, 900);
+  }, 2800);
+}
+
+function showSuccess() {
+  const ss = parseFloat(document.getElementById('seguridadSocial').value) || 0;
+  const bruto = parseFloat(document.getElementById('rendimientosIntegros').value) || 0;
+  const irpf  = parseFloat(document.getElementById('retencionesIRPF').value) || 0;
+
+  document.getElementById('recNif').textContent   = document.getElementById('nifEmpresa').value;
+  document.getElementById('recBrutos').textContent = fmt(bruto);
+  document.getElementById('recIRPF').textContent  = fmt(irpf);
+  document.getElementById('recNeto').textContent  = fmt(bruto - ss);
+
+  document.getElementById('formCard').style.display = 'none';
+  document.getElementById('successScreen').classList.add('show');
+  document.getElementById('successScreen').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function resetForm() {
+  document.getElementById('formCard').style.display = '';
+  document.getElementById('successScreen').classList.remove('show');
+  // reset progress steps
+  ['pStep1','pStep2','pStep3'].forEach((id,i) => {
+    const el = document.getElementById(id);
+    el.classList.remove('done','active');
+    el.querySelector('.progress-step-dot').textContent = i+1;
+    if (i === 0) el.classList.add('active');
+  });
+  const ring = document.getElementById('progressRing');
+  ring.style.strokeDashoffset = 2 * Math.PI * 35;
+  ring.classList.remove('complete');
+  document.getElementById('progressIcon').textContent = '⏳';
+  document.getElementById('progressTitle').textContent = 'Guardando tus datos';
+  document.getElementById('progressDesc').textContent = 'Por favor, espera. No cierres esta ventana.';
+}
+
+// ── ERROR TOAST  (F2 — mensajes claros) ─────────────────────────────
+function showError(msg) {
+  if (msg) document.getElementById('toastBody').textContent = msg;
+  const toast = document.getElementById('errorToast');
+  toast.classList.add('show');
+  clearTimeout(showError._t);
+  showError._t = setTimeout(() => toast.classList.remove('show'), 6000);
+}
+function closeToast() {
+  document.getElementById('errorToast').classList.remove('show');
+}
+
+// ── SAVE DRAFT ───────────────────────────────────────────────────────
+function saveDraft() {
+  const el = document.getElementById('lastSaved');
+  el.textContent = 'guardando…';
+  setTimeout(() => { el.textContent = 'hace un momento'; }, 1200);
+}
+</script>
+</body>
+</html>
